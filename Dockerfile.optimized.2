@@ -1,0 +1,15 @@
+FROM node AS builder
+RUN npm i -g @dojo/cli
+
+COPY package.json /usr/local/app/
+COPY package-lock.json /usr/local/app/
+
+WORKDIR /usr/local/app
+
+RUN npm i
+
+COPY . /usr/local/app
+RUN dojo build
+
+FROM nginx:1.17
+COPY --from=builder /usr/local/app/output/dist/ /usr/share/nginx/html/
